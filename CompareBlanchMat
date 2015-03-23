@@ -1,0 +1,40 @@
+clear all
+close all
+clc
+
+% add these folders to your MATLAB path so MATLAB knows to look for
+% the codes here.
+addpath('/Users/dmikesell/GIT/MITcorrelations/matlab/');
+% addpath('/Users/dmikessell/GIT/MITcorrelations/matlab/external');
+
+% load a test matrix
+load('/Volumes/data/IRIS_data/USArray/JulianDayData/julDay_14.mat');
+
+%% remove any blank traces
+
+blankIdx    = ( sum(double(W),1) == 0 ); % find blank traces
+W(blankIdx) = []; % remove blank traces
+
+
+%% Preprocess data
+
+fmin = 0.01;
+fmax = 1.0;
+
+index = 1; % trace to grab
+
+FB       = [fmin, fmax];
+W_whiten = WhitenWaveform(W(index),FB);
+Wwd = double(W_whiten);
+
+%% use blanchmat
+
+D = double(W(index));
+dt = 1/get(W(index),'freq');
+ 
+Dwd = BlanchMat(D,FB,dt);
+ 
+trace = 1:10000;
+
+plot(Dwd(trace),'b'); hold on;
+plot(Wwd,'r--');
